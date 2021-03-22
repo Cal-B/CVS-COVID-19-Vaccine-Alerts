@@ -10,11 +10,7 @@ import urllib.request
 import threading
 import smtplib
 import ssl
-
-state= input("Type the state you are from, with the first letter capitalized, and press enter: ")
-sender = input("Type the email that you would like to send emails FROM, and press enter: ")
-password = input("Type the password for that email and press enter: ")
-receiver = input("Type the email that you would like to send emails TO, and press enter: ")
+import time.sleep
 
 # How often to refresh the page, in seconds
 UPDATE = 60.0 
@@ -23,7 +19,7 @@ UPDATE = 60.0
 port = 465  
 
 # Message in the email.
-message = "Book an appointment at CVS! https://www.cvs.com/immunizations/covid-19-vaccine"
+message = "There are PA vaccines available, book an appointment at CVS! https://www.cvs.com/immunizations/covid-19-vaccine"
 
 # Create a secure SSL context
 context = ssl.create_default_context()
@@ -33,7 +29,7 @@ context = ssl.create_default_context()
 def sendit():
     
     # Initializes threading (repition / refreshing of website)
-    threading.Timer(UPDATE, sendit).start()
+    # threading.Timer(UPDATE, sendit).start()
     
     # Reads website into var 'html'
     html = urllib.request.urlopen('https://www.cvs.com/immunizations/covid-19-vaccine').read()
@@ -45,7 +41,9 @@ def sendit():
         # Login via STMP and send email
         with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
             server.login(sender, password)
-            server.sendmail(sender, receiver, message)
+            for i in receiver:
+                server.sendmail(sender, receiver, message)
+                time.sleep(3)
 
     
 sendit()
